@@ -39,36 +39,49 @@ public class StitchingParameters {
 
 	/** 维度 */
 	public int dimensionality;
-	/** 融合方法 */
-	public int fusionMethod;
+	/** 融合方法.具体值参考{@link CommonFunctions.methodList} */
+	public int fusionMethod = 0;
 	public String fusedName;
 	public int checkPeaks;
-	public boolean addTilesAsRois;
-	public boolean computeOverlap, 
+	/** 图块是否需要切割 */
+	public boolean addTilesAsRois = false;
+	/** 是否计算重叠. 否则使用近似网格坐标 */
+	public boolean computeOverlap;
 	/** 亚像素精度 */
-	subpixelAccuracy, ignoreZeroValuesFusion = false, downSample = false, 
-	/** 显示融合 */
-	displayFusion = false;
-	public boolean invertX, invertY;
+	public boolean subpixelAccuracy; 
+	/** 是否忽略零值融合 */
+	public boolean ignoreZeroValuesFusion = false; 
+	/** 是否下采样图块 */
+	public boolean downSample = false;
+	/** 是否显示融合 */
+	public boolean displayFusion = false;
+	/** 是否反转x,y坐标 */
+	public boolean invertX = false, invertY = false;
+	/** 是否忽略z轴位置 */
 	public boolean ignoreZStage;
 	public double xOffset;
 	public double yOffset;
 	public double zOffset;
 
+	/** 是否使用虚拟输入图像. 缓慢!甚至在融合过程中与亚像素精度结合时甚至更慢 */
 	public boolean virtual = false;
 	public int channel1;
 	public int channel2;
 
 	public int timeSelect;
 
-	public int cpuMemChoice = 0;
-	// 0 == fuse&display, 1 == writeToDisk
-	public int outputVariant = 0;
+	/** 计算参数选择.值参考{@link CommonFunctions.cpuMemSelect} */
+	public int cpuMemChoice = 1;
+	/** 输出设置参数.可用值: 0 == fuse&display, 1 == writeToDisk */ 
+	public int outputVariant = 1;
 	/** 输出路径 */
 	public String outputDirectory = null;
 
+	/** 回归阈值 */
 	public double regThreshold = -2;
+	/** 最大/平均位移阈值 */
 	public double relativeThreshold = 2.5;
+	/** 绝对位移阈值 */
 	public double absoluteThreshold = 3.5;
 
 	// added by John Lapage: allows storage of a sequential comparison range

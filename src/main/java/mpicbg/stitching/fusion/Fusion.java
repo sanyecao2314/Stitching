@@ -86,7 +86,7 @@ public class Fusion {
 	 *                           necessary, we can compute everything with RealType
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImagePlus fuse(final T targetType, final ArrayList<ImagePlus> images, final ArrayList<InvertibleBoundable> models, final int dimensionality,
-			final boolean subpixelResolution, final int fusionType, final String outputDirectory, final boolean noOverlap, final boolean ignoreZeroValues, final boolean displayImages) {
+			final boolean subpixelResolution, final int fusionType, final boolean noOverlap, final boolean ignoreZeroValues, final boolean displayImages) {
 		// first we need to estimate the boundaries of the new image
 		final double[] offset = new double[dimensionality];
 		final int[] size = new int[dimensionality];
@@ -104,13 +104,10 @@ public class Fusion {
 		final ImgFactory<T> f = new ImagePlusImgFactory<T>();
 
 		// the final composite
-		final ImageStack stack;
+		final ImageStack stack = new ImageStack(size[0], size[1]);
 
 		// there is no output if we write to disk
-		if (outputDirectory == null)
-			stack = new ImageStack(size[0], size[1]);
-		else
-			stack = null;
+			
 
 		// "Overlay into composite image"
 		for (int t = 1; t <= numTimePoints; ++t) {
@@ -120,10 +117,7 @@ public class Fusion {
 				final Img<T> out;
 
 				// we just create one slice if we write to disk
-				if (outputDirectory == null)
-					out = f.create(size, targetType);
-				else
-					out = f.create(new int[] { size[0], size[1] }, targetType); // just create a slice
+				out = f.create(size, targetType);
 
 				// init the fusion
 				PixelFusion fusion = null;
@@ -173,18 +167,7 @@ public class Fusion {
 							fusion = new BlendingPixelFusion(blockData);
 					}
 
-					if (outputDirectory == null) {
-						fuseBlock(out, blockData, offset, models, fusion, displayImages);
-					} else {
-						final int numSlices;
-
-						if (dimensionality == 2)
-							numSlices = 1;
-						else
-							numSlices = size[2];
-
-						writeBlock(out, numSlices, t, numTimePoints, c, numChannels, blockData, offset, models, fusion, outputDirectory);
-					}
+					fuseBlock(out, blockData, offset, models, fusion, displayImages);
 				} else {
 					// can be a mixture of different RealTypes
 					final ArrayList<ImageInterpolation<? extends RealType<?>>> blockData = new ArrayList<ImageInterpolation<? extends RealType<?>>>();
@@ -216,21 +199,10 @@ public class Fusion {
 							fusion = new BlendingPixelFusion(blockData);
 					}
 
-					if (outputDirectory == null) {
-						if (noOverlap)
-							fuseBlockNoOverlap(out, blockData, offset, models, displayImages);
-						else
-							fuseBlock(out, blockData, offset, models, fusion, displayImages);
-					} else {
-						final int numSlices;
-
-						if (dimensionality == 2)
-							numSlices = 1;
-						else
-							numSlices = size[2];
-
-						writeBlock(out, numSlices, t, numTimePoints, c, numChannels, blockData, offset, models, fusion, outputDirectory);
-					}
+					if (noOverlap)
+						fuseBlockNoOverlap(out, blockData, offset, models, displayImages);
+					else
+						fuseBlock(out, blockData, offset, models, fusion, displayImages);
 				}
 
 				// add to stack

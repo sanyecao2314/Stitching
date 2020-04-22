@@ -76,11 +76,12 @@ import tools.RoiPicker;
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
  *
  */
-public class Stitching_Grid implements PlugIn {
+public class Stitching_Grid {
 	final public static String version = "1.2";
 	final private String myURL = "http://fly.mpi-cbg.de/preibisch";
 
-	public static boolean seperateOverlapY = false;
+	/** 是否有重叠 */
+	public static boolean seperateOverlapY = true;
 
 	public static int defaultGridChoice1 = 0;
 	public static int defaultGridChoice2 = 0;
@@ -118,7 +119,7 @@ public class Stitching_Grid implements PlugIn {
 	public static double defaultDisplacementThresholdRelative = 2.5;
 	public static double defaultDisplacementThresholdAbsolute = 3.5;
 	public static boolean defaultOnlyPreview = false;
-	public static int defaultMemorySpeedChoice = 0;
+	public static int defaultMemorySpeedChoice = 1;
 
 	// Added by John Lapage: user sets this parameter to define how many adjacent
 	// files each image will be compared to
@@ -127,216 +128,218 @@ public class Stitching_Grid implements PlugIn {
 	public static boolean defaultQuickFusion = true;
 
 	public static String[] resultChoices = { "Fuse and display", "Write to disk" };
-	public static int defaultResult = 0;
+	public static int defaultResult = 1;
 	public static String defaultOutputDirectory = "";
 	
 	
 	public static void main(String[] args) {
 		Stitching_Grid stitch = new Stitching_Grid();
-		stitch.run("");
+		stitch.run(5, 0, 3, 3, 20, 20, "E:/BaiduYunDownload/screenshot/", "", "E:/BaiduYunDownload/screenshot/res/");
 	}
 
-	@Override
-	public void run(String arg0) {
+	public void run(int gridType, int gridOrder, int gridSizeX, int gridSizeY, int overlapX, int overlapY,
+			String directory, String filenames, String outputDirectory) {
 		Log.info("Stitching internal version: " + Stitching_Grid.version);
 
 		final GridType grid = new GridType();
 
-		final int gridType = grid.getType();
-		final int gridOrder = grid.getOrder();
+//		final int gridType = grid.getType();
+//		final int gridOrder = grid.getOrder();
 
 		if (gridType == -1 || gridOrder == -1)
 			return;
 
-		final GenericDialogPlus gd = new GenericDialogPlus("Grid stitching: " + GridType.choose1[gridType] + ", " + GridType.choose2[gridType][gridOrder]);
+//		final GenericDialogPlus gd = new GenericDialogPlus("Grid stitching: " + GridType.choose1[gridType] + ", " + GridType.choose2[gridType][gridOrder]);
 
 		if (gridType < 5) {
-			gd.addNumericField("Grid_size_x", defaultGridSizeX, 0);
-			gd.addNumericField("Grid_size_y", defaultGridSizeY, 0);
+//			gd.addNumericField("Grid_size_x", defaultGridSizeX, 0);
+//			gd.addNumericField("Grid_size_y", defaultGridSizeY, 0);
 
-			if (seperateOverlapY) {
-				gd.addSlider("Tile_overlap_x [%]", 0, 100, defaultOverlapX);
-				gd.addSlider("Tile_overlap_y [%]", 0, 100, defaultOverlapY);
-			} else {
-				gd.addSlider("Tile_overlap [%]", 0, 100, defaultOverlapX);
-			}
+//			if (seperateOverlapY) {
+//				gd.addSlider("Tile_overlap_x [%]", 0, 100, defaultOverlapX);
+//				gd.addSlider("Tile_overlap_y [%]", 0, 100, defaultOverlapY);
+//			} else {
+//				gd.addSlider("Tile_overlap [%]", 0, 100, defaultOverlapX);
+//			}
 
 			// row-by-row, column-by-column or snake
 			// needs the same questions
-			if (grid.getType() < 4) {
-				gd.addNumericField("First_file_index_i", defaultStartI, 0);
-			} else {
-				gd.addNumericField("First_file_index_x", defaultStartX, 0);
-				gd.addNumericField("First_file_index_y", defaultStartY, 0);
-			}
+//			if (grid.getType() < 4) {
+//				gd.addNumericField("First_file_index_i", defaultStartI, 0);
+//			} else {
+//				gd.addNumericField("First_file_index_x", defaultStartX, 0);
+//				gd.addNumericField("First_file_index_y", defaultStartY, 0);
+//			}
 		}
 
-		if (gridType == 6 && gridOrder == 1) {
-			gd.addFileField("Multi_series_file", defaultSeriesFile, 50);
-		} else {
-			gd.addDirectoryField("Directory", defaultDirectory, 50);
+//		if (gridType == 6 && gridOrder == 1) {
+//			gd.addFileField("Multi_series_file", defaultSeriesFile, 50);
+//		} else {
+//			gd.addDirectoryField("Directory", defaultDirectory, 50);
+//
+//			// Modified by John Lapage: copying the general setup for Unknown Positions
+//			// option
+//			if (gridType == 5 || gridType == 7)
+//				gd.addCheckbox("Confirm_files", defaultConfirmFiles);
+//
+//			if (gridType < 5)
+//				gd.addStringField("File_names for tiles", defaultFileNames, 50);
+//
+//			if (gridType == 6)
+//				gd.addStringField("Layout_file", defaultTileConfiguration, 50);
+//			else
+//				gd.addStringField("Output_textfile_name", defaultTileConfiguration, 50);
+//		}
 
-			// Modified by John Lapage: copying the general setup for Unknown Positions
-			// option
-			if (gridType == 5 || gridType == 7)
-				gd.addCheckbox("Confirm_files", defaultConfirmFiles);
+//		gd.addChoice("Fusion_method", CommonFunctions.fusionMethodListGrid, CommonFunctions.fusionMethodListGrid[defaultFusionMethod]);
+//		gd.addNumericField("Regression_threshold", defaultRegressionThreshold, 2);
+//		gd.addNumericField("Max/avg_displacement_threshold", defaultDisplacementThresholdRelative, 2);
+//		gd.addNumericField("Absolute_displacement_threshold", defaultDisplacementThresholdAbsolute, 2);
+//		// added by John Lapage: creates text box in which the user can set which range
+//		// to compare within. Would be nicer as an Integer.
+//		if (gridType == 7)
+//			gd.addNumericField("Frame range to compare", defaultSeqRange, 0);
+//		gd.addCheckbox("Add_tiles_as_ROIs", defaultAddTilesAsRois);
+//		if (gridType < 5)
+//			gd.addCheckbox("Compute_overlap (otherwise use approximate grid coordinates)", defaultComputeOverlap);
+//		else if (gridType == 6 && gridOrder == 0)
+//			gd.addCheckbox("Compute_overlap (otherwise apply coordinates from layout file)", defaultComputeOverlap);
+//		else if (gridType == 6 && gridOrder == 1) {
+//			gd.addCheckbox("Compute_overlap (otherwise trust coordinates in the file)", defaultComputeOverlap);
+//			gd.addCheckbox("Ignore_Calibration", defaultIgnoreCalibration);
+//			gd.addSlider("Increase_overlap [%]", 0, 100, defaultIncreaseOverlap);
+//		}
 
-			if (gridType < 5)
-				gd.addStringField("File_names for tiles", defaultFileNames, 50);
+//		gd.addCheckbox("Invert_X coordinates", defaultInvertX);
+//		gd.addCheckbox("Invert_Y coordinates", defaultInvertY);
+//		gd.addCheckbox("Ignore_Z_stage position", defaultIgnoreZStage);
+//		gd.addCheckbox("Subpixel_accuracy", defaultSubpixelAccuracy);
+//		gd.addCheckbox("Downsample_tiles", defaultDownSample);
+//		gd.addCheckbox("Display_fusion", defaultDisplayFusion);
+//		gd.addCheckbox("Use_virtual_input_images (Slow! Even slower when combined with subpixel accuracy during fusion!)", defaultVirtualInput);
+//		gd.addChoice("Computation_parameters", CommonFunctions.cpuMemSelect, CommonFunctions.cpuMemSelect[defaultMemorySpeedChoice]);
+//		gd.addChoice("Image_output", resultChoices, resultChoices[defaultResult]);
+//		gd.addMessage("");
+//		gd.addMessage("This Plugin is developed by Stephan Preibisch\n" + myURL);
 
-			if (gridType == 6)
-				gd.addStringField("Layout_file", defaultTileConfiguration, 50);
-			else
-				gd.addStringField("Output_textfile_name", defaultTileConfiguration, 50);
-		}
+//		MultiLineLabel text = (MultiLineLabel) gd.getMessage();
+//		addHyperLinkListener(text, myURL);
 
-		gd.addChoice("Fusion_method", CommonFunctions.fusionMethodListGrid, CommonFunctions.fusionMethodListGrid[defaultFusionMethod]);
-		gd.addNumericField("Regression_threshold", defaultRegressionThreshold, 2);
-		gd.addNumericField("Max/avg_displacement_threshold", defaultDisplacementThresholdRelative, 2);
-		gd.addNumericField("Absolute_displacement_threshold", defaultDisplacementThresholdAbsolute, 2);
-		// added by John Lapage: creates text box in which the user can set which range
-		// to compare within. Would be nicer as an Integer.
-		if (gridType == 7)
-			gd.addNumericField("Frame range to compare", defaultSeqRange, 0);
-		gd.addCheckbox("Add_tiles_as_ROIs", defaultAddTilesAsRois);
-		if (gridType < 5)
-			gd.addCheckbox("Compute_overlap (otherwise use approximate grid coordinates)", defaultComputeOverlap);
-		else if (gridType == 6 && gridOrder == 0)
-			gd.addCheckbox("Compute_overlap (otherwise apply coordinates from layout file)", defaultComputeOverlap);
-		else if (gridType == 6 && gridOrder == 1) {
-			gd.addCheckbox("Compute_overlap (otherwise trust coordinates in the file)", defaultComputeOverlap);
-			gd.addCheckbox("Ignore_Calibration", defaultIgnoreCalibration);
-			gd.addSlider("Increase_overlap [%]", 0, 100, defaultIncreaseOverlap);
-		}
+//		gd.showDialog();
 
-		gd.addCheckbox("Invert_X coordinates", defaultInvertX);
-		gd.addCheckbox("Invert_Y coordinates", defaultInvertY);
-		gd.addCheckbox("Ignore_Z_stage position", defaultIgnoreZStage);
-		gd.addCheckbox("Subpixel_accuracy", defaultSubpixelAccuracy);
-		gd.addCheckbox("Downsample_tiles", defaultDownSample);
-		gd.addCheckbox("Display_fusion", defaultDisplayFusion);
-		gd.addCheckbox("Use_virtual_input_images (Slow! Even slower when combined with subpixel accuracy during fusion!)", defaultVirtualInput);
-		gd.addChoice("Computation_parameters", CommonFunctions.cpuMemSelect, CommonFunctions.cpuMemSelect[defaultMemorySpeedChoice]);
-		gd.addChoice("Image_output", resultChoices, resultChoices[defaultResult]);
-		gd.addMessage("");
-		gd.addMessage("This Plugin is developed by Stephan Preibisch\n" + myURL);
-
-		MultiLineLabel text = (MultiLineLabel) gd.getMessage();
-		addHyperLinkListener(text, myURL);
-
-		gd.showDialog();
-
-		if (gd.wasCanceled())
-			return;
+//		if (gd.wasCanceled())
+//			return;
 
 		// the general stitching parameters
 		final StitchingParameters params = new StitchingParameters();
 
-		final int gridSizeX, gridSizeY;
-		double overlapX, overlapY;
-		int startI = 0, startX = 0, startY = 0;
+//		final int gridSizeX, gridSizeY;	//x,y方向分别有多少行列
+//		double overlapX, overlapY; //重合区域
+		int startI = 1, //从几开始,如:0或1
+				startX = 0, startY = 0;
 
 		if (gridType < 5) {
-			gridSizeX = defaultGridSizeX = (int) Math.round(gd.getNextNumber());
-			gridSizeY = defaultGridSizeY = (int) Math.round(gd.getNextNumber());
+//			gridSizeX = defaultGridSizeX = (int) Math.round(gd.getNextNumber());
+//			gridSizeY = defaultGridSizeY = (int) Math.round(gd.getNextNumber());
 
 			if (seperateOverlapY) {
-				overlapX = defaultOverlapX = gd.getNextNumber();
+//				overlapX = defaultOverlapX = gd.getNextNumber();
 				overlapX /= 100.0;
-				overlapY = defaultOverlapY = gd.getNextNumber();
+//				overlapY = defaultOverlapY = gd.getNextNumber();
 				overlapY /= 100.0;
-
 			} else {
-				overlapX = overlapY = defaultOverlapY = defaultOverlapX = gd.getNextNumber();
+//				overlapX = overlapY = defaultOverlapY = defaultOverlapX = gd.getNextNumber();
 				overlapX /= 100.0;
 				overlapY = overlapX;
 			}
 
 			// row-by-row, column-by-column or snake
 			// needs the same questions
-			if (grid.getType() < 4) {
-				startI = defaultStartI = (int) Math.round(gd.getNextNumber());
-			} else // position
-			{
-				startX = defaultStartX = (int) Math.round(gd.getNextNumber());
-				startY = defaultStartY = (int) Math.round(gd.getNextNumber());
-			}
+//			if (grid.getType() < 4) {
+//				startI = defaultStartI = (int) Math.round(gd.getNextNumber());
+//			} else // position
+//			{
+//				startX = defaultStartX = (int) Math.round(gd.getNextNumber());
+//				startY = defaultStartY = (int) Math.round(gd.getNextNumber());
+//			}
 		} else {
 			gridSizeX = gridSizeY = 0;
 			overlapX = overlapY = 0;
 		}
 
-		String directory,	//待处理图片存储路径 
-		outputFile, seriesFile;
-		final boolean confirmFiles; //选择的图片是否需要弹窗确认
-		final String filenames;
+//		String directory,	//待处理图片存储路径 
+		String outputFile = null, seriesFile;
+//		final boolean confirmFiles; //选择的图片是否需要弹窗确认
+//		final String filenames;	//文件名的格式
 
 		if (gridType == 6 && gridOrder == 1)
 		// "Positions from file" + "Defined by metadata"
 		{
-			seriesFile = defaultSeriesFile = gd.getNextString();
+			seriesFile = defaultSeriesFile;
 			outputFile = defaultTileConfiguration;
 			// derive directory from the file (the dialog doesn't provide one)
 			directory = seriesFile.trim();
 			directory = directory.replace('\\', '/');
 			directory = directory.split("/[^/]*$")[0]; // remove the file part
-			filenames = null;
-			confirmFiles = false;
+//			filenames = null;
+//			confirmFiles = false;
 		} else {
-			directory = defaultDirectory = gd.getNextString();
+//			directory = defaultDirectory = gd.getNextString();
 			seriesFile = null;
 
 			// Modified by John Lapage: copying the general setup for Unknown Positions
 			// option
-			if (gridType == 5 || gridType == 7)
-				confirmFiles = defaultConfirmFiles = gd.getNextBoolean();
-			else
-				confirmFiles = false;
+//			if (gridType == 5 || gridType == 7)
+//				confirmFiles = defaultConfirmFiles = gd.getNextBoolean();
+//			else
+//				confirmFiles = false;
 
-			if (gridType < 5)
-				filenames = defaultFileNames = gd.getNextString();
-			else
-				filenames = "";
+//			if (gridType < 5)
+//				filenames = defaultFileNames = gd.getNextString();
+//			else
+//				filenames = "";
 
-			outputFile = defaultTileConfiguration = gd.getNextString();
+			outputFile = defaultTileConfiguration;
 		}
 
-		params.fusionMethod = defaultFusionMethod = gd.getNextChoiceIndex();
-		params.regThreshold = defaultRegressionThreshold = gd.getNextNumber();
-		params.relativeThreshold = defaultDisplacementThresholdRelative = gd.getNextNumber();
-		params.absoluteThreshold = defaultDisplacementThresholdAbsolute = gd.getNextNumber();
+		params.fusionMethod = defaultFusionMethod ;
+		params.regThreshold = defaultRegressionThreshold;
+		params.relativeThreshold = defaultDisplacementThresholdRelative;
+		params.absoluteThreshold = defaultDisplacementThresholdAbsolute;
 		// Added by John Lapage: sends user specified range to the parameters object
-		if (gridType == 7)
-			params.seqRange = (int) (defaultSeqRange = Math.round(gd.getNextNumber()));
+//		if (gridType == 7)
+//			params.seqRange = (int) (defaultSeqRange = Math.round(gd.getNextNumber()));
 
-		final boolean addTilesAsRois = params.addTilesAsRois = defaultAddTilesAsRois = gd.getNextBoolean();
+		final boolean addTilesAsRois = params.addTilesAsRois = defaultAddTilesAsRois;
 		// Modified by John Lapage (rearranged). Copies the setup for Unknown Positions.
 		// User specifies this with all other options.
 		if (gridType == 5 || gridType == 7)
 			params.computeOverlap = true;
 		else
-			params.computeOverlap = defaultComputeOverlap = gd.getNextBoolean();
+			params.computeOverlap = defaultComputeOverlap;
 
+		//增加重叠
 		final double increaseOverlap;
+		//是否忽略校准
 		final boolean ignoreCalibration;
 		if (gridType == 6 && gridOrder == 1) {
-			ignoreCalibration = defaultIgnoreCalibration = gd.getNextBoolean();
-			increaseOverlap = defaultIncreaseOverlap = gd.getNextNumber();
+			ignoreCalibration = defaultIgnoreCalibration;
+			increaseOverlap = defaultIncreaseOverlap;
 		} else {
 			ignoreCalibration = false;
 			increaseOverlap = 0;
 		}
 
-		final boolean invertX = params.invertX = defaultInvertX = gd.getNextBoolean();
-		final boolean invertY = params.invertY = defaultInvertY = gd.getNextBoolean();
-		final boolean ignoreZStage = params.ignoreZStage = defaultIgnoreZStage = gd.getNextBoolean();
+		final boolean invertX = params.invertX = defaultInvertX;
+		final boolean invertY = params.invertY = defaultInvertY;
+		final boolean ignoreZStage = params.ignoreZStage = defaultIgnoreZStage;
 
-		params.subpixelAccuracy = defaultSubpixelAccuracy = gd.getNextBoolean();
-		final boolean downSample = params.downSample = defaultDownSample = gd.getNextBoolean();
-		params.displayFusion = defaultDisplayFusion = gd.getNextBoolean();
-		params.virtual = defaultVirtualInput = gd.getNextBoolean();
-		params.cpuMemChoice = defaultMemorySpeedChoice = gd.getNextChoiceIndex();
-		params.outputVariant = defaultResult = gd.getNextChoiceIndex();
+		params.subpixelAccuracy = defaultSubpixelAccuracy;
+		final boolean downSample = params.downSample = defaultDownSample;
+		params.displayFusion = defaultDisplayFusion;
+		params.virtual = defaultVirtualInput;
+		params.cpuMemChoice = defaultMemorySpeedChoice;
+		params.outputVariant = defaultResult;
 
 		if (params.virtual) {
 			Log.warn("Using virtual input images. This will save a lot of RAM, but will also be slower ... \n");
@@ -346,21 +349,22 @@ public class Stitching_Grid implements PlugIn {
 			}
 		}
 
-		if (params.fusionMethod != CommonFunctions.fusionMethodListGrid.length - 1 && params.outputVariant == 1) {
-			if (defaultOutputDirectory == null || defaultOutputDirectory.length() == 0)
-				defaultOutputDirectory = defaultDirectory;
-
-			final GenericDialogPlus gd2 = new GenericDialogPlus("Select output directory");
-			gd2.addDirectoryField("Output_directory", defaultOutputDirectory, 60);
-			gd2.showDialog();
-
-			if (gd2.wasCanceled())
-				return;
-
-			params.outputDirectory = defaultOutputDirectory = gd2.getNextString();
-		} else {
-			params.outputDirectory = null;
-		}
+//		if (params.fusionMethod != CommonFunctions.fusionMethodListGrid.length - 1 && params.outputVariant == 1) {
+//			if (defaultOutputDirectory == null || defaultOutputDirectory.length() == 0)
+//				defaultOutputDirectory = defaultDirectory;
+//
+//			final GenericDialogPlus gd2 = new GenericDialogPlus("Select output directory");
+//			gd2.addDirectoryField("Output_directory", defaultOutputDirectory, 60);
+//			gd2.showDialog();
+//
+//			if (gd2.wasCanceled())
+//				return;
+//
+//			params.outputDirectory = defaultOutputDirectory = gd2.getNextString();
+//		} else {
+//			params.outputDirectory = null;
+//		}
+		params.outputDirectory = outputDirectory;
 
 		final long startTime = System.currentTimeMillis();
 
@@ -394,7 +398,7 @@ public class Stitching_Grid implements PlugIn {
 			elements = getGridLayout(grid, gridSizeX, gridSizeY, overlapX, overlapY, directory, filenames, startI, startX, startY, params.virtual, ds);
 		// John Lapage modified this: copying setup for Unknown Positions
 		else if (gridType == 5 || gridType == 7)
-			elements = getAllFilesInDirectory(directory, confirmFiles);
+			elements = getAllFilesInDirectory(directory);
 		else if (gridType == 6 && gridOrder == 1) // positions from file metadata
 			elements = getLayoutFromMultiSeriesFile(seriesFile, increaseOverlap, ignoreCalibration, invertX, invertY, ignoreZStage, ds);
 		else if (gridType == 6) // positions from tile configuration file
@@ -582,12 +586,12 @@ public class Stitching_Grid implements PlugIn {
 			}
 
 			if (is32bit)
-				imp = Fusion.fuse(new FloatType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false, params.displayFusion);
+				imp = Fusion.fuse(new FloatType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, noOverlap, false, params.displayFusion);
 			else if (is16bit)
-				imp = Fusion.fuse(new UnsignedShortType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false,
+				imp = Fusion.fuse(new UnsignedShortType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, noOverlap, false,
 						params.displayFusion);
 			else if (is8bit)
-				imp = Fusion.fuse(new UnsignedByteType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false,
+				imp = Fusion.fuse(new UnsignedByteType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, noOverlap, false,
 						params.displayFusion);
 			else
 				Log.error("Unknown image type for fusion.");
@@ -1122,7 +1126,7 @@ public class Stitching_Grid implements PlugIn {
 	 * @param confirmFiles 选择的图片是否需要弹窗确认
 	 * @return 
 	 */
-	protected ArrayList<ImageCollectionElement> getAllFilesInDirectory(final String directory, final boolean confirmFiles) {
+	protected ArrayList<ImageCollectionElement> getAllFilesInDirectory(final String directory) {
 		// get all files from the directory
 		final File dir = new File(directory);
 		if (!dir.isDirectory()) {
@@ -1152,20 +1156,20 @@ public class Stitching_Grid implements PlugIn {
 		for (int i = 0; i < files.size(); ++i)
 			useFile[i] = true;
 
-		if (confirmFiles) {
-			final GenericDialogPlus gd = new GenericDialogPlus("Confirm files");
-
-			for (final String name : files)
-				gd.addCheckbox(name, true);
-
-			gd.showDialog();
-
-			if (gd.wasCanceled())
-				return null;
-
-			for (int i = 0; i < files.size(); ++i)
-				useFile[i] = gd.getNextBoolean();
-		}
+//		if (confirmFiles) {
+//			final GenericDialogPlus gd = new GenericDialogPlus("Confirm files");
+//
+//			for (final String name : files)
+//				gd.addCheckbox(name, true);
+//
+//			gd.showDialog();
+//
+//			if (gd.wasCanceled())
+//				return null;
+//
+//			for (int i = 0; i < files.size(); ++i)
+//				useFile[i] = gd.getNextBoolean();
+//		}
 
 		final ArrayList<ImageCollectionElement> elements = new ArrayList<ImageCollectionElement>();
 
