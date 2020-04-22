@@ -258,16 +258,17 @@ public class Stitching_Grid implements PlugIn {
 				startI = defaultStartI = (int) Math.round(gd.getNextNumber());
 			} else // position
 			{
-				startX = defaultStartI = (int) Math.round(gd.getNextNumber());
-				startY = defaultStartI = (int) Math.round(gd.getNextNumber());
+				startX = defaultStartX = (int) Math.round(gd.getNextNumber());
+				startY = defaultStartY = (int) Math.round(gd.getNextNumber());
 			}
 		} else {
 			gridSizeX = gridSizeY = 0;
 			overlapX = overlapY = 0;
 		}
 
-		String directory, outputFile, seriesFile;
-		final boolean confirmFiles;
+		String directory,	//待处理图片存储路径 
+		outputFile, seriesFile;
+		final boolean confirmFiles; //选择的图片是否需要弹窗确认
 		final String filenames;
 
 		if (gridType == 6 && gridOrder == 1)
@@ -1113,6 +1114,14 @@ public class Stitching_Grid implements PlugIn {
 		return elements;
 	}
 
+	/**
+	 * 
+	 * 
+	 * @author fans.fan
+	 * @param directory 图片所在文件夹
+	 * @param confirmFiles 选择的图片是否需要弹窗确认
+	 * @return 
+	 */
 	protected ArrayList<ImageCollectionElement> getAllFilesInDirectory(final String directory, final boolean confirmFiles) {
 		// get all files from the directory
 		final File dir = new File(directory);
