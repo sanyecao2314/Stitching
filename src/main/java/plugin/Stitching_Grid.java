@@ -28,6 +28,7 @@ import ij.ImagePlus;
 import ij.gui.MultiLineLabel;
 import ij.gui.Roi;
 import ij.gui.Toolbar;
+import ij.io.FileSaver;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 
@@ -594,8 +595,10 @@ public class Stitching_Grid implements PlugIn {
 			Log.info("Finished ... (" + (System.currentTimeMillis() - startTime) + " ms)");
 
 			if (imp != null) {
-				imp.setTitle("Fused");
-				imp.show();
+				final FileSaver fs = new FileSaver(imp);
+				fs.saveAsPng(new File(params.outputDirectory, "stitching.png").getAbsolutePath());
+//				imp.setTitle("Fused");
+//				imp.show();
 			}
 
 			if (addTilesAsRois) {

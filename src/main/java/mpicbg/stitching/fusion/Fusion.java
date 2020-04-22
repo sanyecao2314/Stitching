@@ -91,6 +91,7 @@ public class Fusion {
 		final double[] offset = new double[dimensionality];
 		final int[] size = new int[dimensionality];
 		final int numTimePoints = images.get(0).getNFrames();
+		/* 通道数 */
 		final int numChannels = images.get(0).getNChannels();
 
 		estimateBounds(offset, size, images, models, dimensionality);
@@ -151,7 +152,7 @@ public class Fusion {
 					fusion = new OverlapFusion();
 				}
 
-				// extract the complete blockdata
+				// extract the complete blockdata 提取完整的块数据
 				if (subpixelResolution) {
 					final ArrayList<ImageInterpolation<FloatType>> blockData = new ArrayList<ImageInterpolation<FloatType>>();
 
