@@ -24,24 +24,31 @@ package mpicbg.stitching;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 
-public class StitchingParameters 
-{
+public class StitchingParameters {
 	/**
-	 * If we cannot wrap, which factory do we use for computing the phase correlation
+	 * If we cannot wrap, which factory do we use for computing the phase
+	 * correlation
 	 */
 	public static ContainerFactory phaseCorrelationFactory = new ArrayContainerFactory();
-	
+
 	/**
-	 * If you want to force that the {@link ContainerFactory} above is always used set this to true
+	 * If you want to force that the {@link ContainerFactory} above is always used
+	 * set this to true
 	 */
 	public static boolean alwaysCopy = false;
-	
+
+	/** 维度 */
 	public int dimensionality;
+	/** 融合方法 */
 	public int fusionMethod;
 	public String fusedName;
 	public int checkPeaks;
 	public boolean addTilesAsRois;
-	public boolean computeOverlap, subpixelAccuracy, ignoreZeroValuesFusion = false, downSample = false, displayFusion = false;
+	public boolean computeOverlap, 
+	/** 亚像素精度 */
+	subpixelAccuracy, ignoreZeroValuesFusion = false, downSample = false, 
+	/** 显示融合 */
+	displayFusion = false;
 	public boolean invertX, invertY;
 	public boolean ignoreZStage;
 	public double xOffset;
@@ -53,17 +60,18 @@ public class StitchingParameters
 	public int channel2;
 
 	public int timeSelect;
-	
+
 	public int cpuMemChoice = 0;
 	// 0 == fuse&display, 1 == writeToDisk
 	public int outputVariant = 0;
+	/** 输出路径 */
 	public String outputDirectory = null;
-	
+
 	public double regThreshold = -2;
 	public double relativeThreshold = 2.5;
 	public double absoluteThreshold = 3.5;
-	
-	//added by John Lapage: allows storage of a sequential comparison range
+
+	// added by John Lapage: allows storage of a sequential comparison range
 	public boolean sequential = false;
 	public int seqRange = 1;
 
