@@ -133,7 +133,7 @@ public class Stitching_Grid {
 		String directory = "/home/novelbio/Documents/硬件/screenshot2/";
 		String filenames = "{i}_w.png";
 		String outputDirectory = "/home/novelbio/Documents/硬件/screenshot2/res/";
-		stitch.run(0, 1, 3, 1, 20, 20, directory, filenames, outputDirectory);
+		stitch.run(0, 0, 3, 3, 50, 50, directory, filenames, outputDirectory);
 	}
 
 	/**
@@ -331,16 +331,16 @@ public class Stitching_Grid {
 		params.computeOverlap = true;
 
 		//增加重叠
-		final double increaseOverlap;
+		final double increaseOverlap = Math.max(overlapX, overlapY);
 		//是否忽略校准
-		final boolean ignoreCalibration;
-		if (gridType == 6 && gridOrder == 1) {
-			ignoreCalibration = defaultIgnoreCalibration;
-			increaseOverlap = defaultIncreaseOverlap;
-		} else {
-			ignoreCalibration = false;
-			increaseOverlap = 0;
-		}
+		final boolean ignoreCalibration = defaultIgnoreCalibration;
+//		if (gridType == 6 && gridOrder == 1) {
+//			ignoreCalibration = defaultIgnoreCalibration;
+//			increaseOverlap = defaultIncreaseOverlap;
+//		} else {
+//			ignoreCalibration = false;
+//			increaseOverlap = 0;
+//		}
 
 		final boolean invertX = params.invertX = defaultInvertX;
 		final boolean invertY = params.invertY = defaultInvertY;
