@@ -148,7 +148,7 @@ public class Stitching_Grid {
 	 * @param filenames 文件名格式.如:tile_{ii}.tif, {i}_W.png
 	 * @param outputDirectory 输出路径.以/结尾
 	 */
-	public void run(int gridType, int gridOrder, int gridSizeX, int gridSizeY, int overlapX, int overlapY,
+	public void run(int gridType, int gridOrder, int gridSizeX, int gridSizeY, double overlapX, double overlapY,
 			String directory, String filenames, String outputDirectory) {
 		Log.info("Stitching internal version: " + Stitching_Grid.version);
 
@@ -266,13 +266,13 @@ public class Stitching_Grid {
 
 			// row-by-row, column-by-column or snake
 			// needs the same questions
-//			if (grid.getType() < 4) {
-//				startI = defaultStartI = (int) Math.round(gd.getNextNumber());
-//			} else // position
-//			{
-//				startX = defaultStartX = (int) Math.round(gd.getNextNumber());
-//				startY = defaultStartY = (int) Math.round(gd.getNextNumber());
-//			}
+			if (gridType < 4) {
+				startI = defaultStartI;
+			} else // position
+			{
+				startX = defaultStartX;
+				startY = defaultStartY;
+			}
 		} else {
 			gridSizeX = gridSizeY = 0;
 			overlapX = overlapY = 0;
@@ -331,16 +331,16 @@ public class Stitching_Grid {
 		params.computeOverlap = true;
 
 		//增加重叠
-		final double increaseOverlap = Math.max(overlapX, overlapY);
+		final double increaseOverlap ;
 		//是否忽略校准
-		final boolean ignoreCalibration = defaultIgnoreCalibration;
-//		if (gridType == 6 && gridOrder == 1) {
-//			ignoreCalibration = defaultIgnoreCalibration;
-//			increaseOverlap = defaultIncreaseOverlap;
-//		} else {
-//			ignoreCalibration = false;
-//			increaseOverlap = 0;
-//		}
+		boolean ignoreCalibration = defaultIgnoreCalibration;
+		if (gridType == 6 && gridOrder == 1) {
+			ignoreCalibration = defaultIgnoreCalibration;
+			increaseOverlap = defaultIncreaseOverlap;
+		} else {
+			ignoreCalibration = false;
+			increaseOverlap = 0;
+		}
 
 		final boolean invertX = params.invertX = defaultInvertX;
 		final boolean invertY = params.invertY = defaultInvertY;
@@ -1593,8 +1593,8 @@ public class Stitching_Grid {
 	public static String getLeadingZeros(final int zeros, final int number) {
 		String output = "" + number;
 
-		while (output.length() < zeros)
-			output = "0" + output;
+//		while (output.length() < zeros)
+//			output = "0" + output;
 
 		return output;
 	}
