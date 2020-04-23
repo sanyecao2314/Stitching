@@ -46,7 +46,7 @@ public class StitchingParameters {
 	/** 图块是否需要切割 */
 	public boolean addTilesAsRois = false;
 	/** 是否计算重叠. 否则使用近似网格坐标 */
-	public boolean computeOverlap;
+	public boolean computeOverlap = true;
 	/** 亚像素精度 */
 	public boolean subpixelAccuracy; 
 	/** 是否忽略零值融合 */

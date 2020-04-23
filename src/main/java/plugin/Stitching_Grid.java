@@ -130,10 +130,10 @@ public class Stitching_Grid {
 	
 	public static void main(String[] args) {
 		Stitching_Grid stitch = new Stitching_Grid();
-		String directory = "/home/novelbio/Documents/硬件/screenshot/";
-		String filenames = null;
-		String outputDirectory = "/home/novelbio/Documents/硬件/screenshot/res/";
-		stitch.run(5, 0, 3, 3, 20, 20, directory, filenames, outputDirectory);
+		String directory = "/home/novelbio/Documents/硬件/screenshot2/";
+		String filenames = "{i}_w.png";
+		String outputDirectory = "/home/novelbio/Documents/硬件/screenshot2/res/";
+		stitch.run(0, 1, 3, 1, 20, 20, directory, filenames, outputDirectory);
 	}
 
 	/**
@@ -324,10 +324,11 @@ public class Stitching_Grid {
 		final boolean addTilesAsRois = params.addTilesAsRois = defaultAddTilesAsRois;
 		// Modified by John Lapage (rearranged). Copies the setup for Unknown Positions.
 		// User specifies this with all other options.
-		if (gridType == 5 || gridType == 7)
-			params.computeOverlap = true;
-		else
-			params.computeOverlap = defaultComputeOverlap;
+//		if (gridType == 5 || gridType == 7)
+//			params.computeOverlap = true;
+//		else
+//			params.computeOverlap = defaultComputeOverlap;
+		params.computeOverlap = true;
 
 		//增加重叠
 		final double increaseOverlap;
@@ -580,21 +581,21 @@ public class Stitching_Grid {
 			// test if there is no overlap between any of the tiles
 			// if so fusion can be much faster
 			boolean noOverlap = false;
-			if (overlapX == 0 && overlapY == 0 && params.computeOverlap == false && params.subpixelAccuracy == false && gridType < 4) {
-				final GenericDialogPlus gd3 = new GenericDialogPlus("Use fast fusion algorithm");
-				gd3.addMessage("There seems to be no overlap between any of the tiles.");
-				gd3.addCheckbox("Use fast fusion?", defaultQuickFusion);
-
-				gd3.showDialog();
-
-				if (gd3.wasCanceled())
-					return;
-
-				noOverlap = defaultQuickFusion = gd3.getNextBoolean();
-
-				if (noOverlap)
-					Log.info("There is no overlap between any of the tiles, using faster fusion algorithm.");
-			}
+//			if (overlapX == 0 && overlapY == 0 && params.computeOverlap == false && params.subpixelAccuracy == false && gridType < 4) {
+//				final GenericDialogPlus gd3 = new GenericDialogPlus("Use fast fusion algorithm");
+//				gd3.addMessage("There seems to be no overlap between any of the tiles.");
+//				gd3.addCheckbox("Use fast fusion?", defaultQuickFusion);
+//
+//				gd3.showDialog();
+//
+//				if (gd3.wasCanceled())
+//					return;
+//
+//				noOverlap = defaultQuickFusion = gd3.getNextBoolean();
+//
+//				if (noOverlap)
+//					Log.info("There is no overlap between any of the tiles, using faster fusion algorithm.");
+//			}
 
 			if (is32bit)
 				imp = Fusion.fuse(new FloatType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, noOverlap, false, params.displayFusion);
