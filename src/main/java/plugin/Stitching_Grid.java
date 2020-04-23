@@ -21,17 +21,6 @@
  */
 package plugin;
 
-import static stitching.CommonFunctions.addHyperLinkListener;
-import fiji.util.gui.GenericDialogPlus;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.gui.MultiLineLabel;
-import ij.gui.Roi;
-import ij.gui.Toolbar;
-import ij.io.FileSaver;
-import ij.plugin.PlugIn;
-import ij.plugin.frame.RoiManager;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fiji.util.gui.GenericDialogPlus;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.Roi;
+import ij.gui.Toolbar;
+import ij.io.FileSaver;
+import ij.plugin.frame.RoiManager;
 import loci.common.services.ServiceFactory;
 import loci.formats.ChannelSeparator;
 import loci.formats.FormatException;
@@ -78,7 +74,7 @@ import tools.RoiPicker;
  */
 public class Stitching_Grid {
 	final public static String version = "1.2";
-	final private String myURL = "http://fly.mpi-cbg.de/preibisch";
+//	final private String myURL = "http://fly.mpi-cbg.de/preibisch";
 
 	/** 是否有重叠 */
 	public static boolean seperateOverlapY = true;
@@ -134,14 +130,29 @@ public class Stitching_Grid {
 	
 	public static void main(String[] args) {
 		Stitching_Grid stitch = new Stitching_Grid();
-		stitch.run(5, 0, 3, 3, 20, 20, "E:/BaiduYunDownload/screenshot/", "", "E:/BaiduYunDownload/screenshot/res/");
+		String directory = "/home/novelbio/Documents/硬件/screenshot/";
+		String filenames = null;
+		String outputDirectory = "/home/novelbio/Documents/硬件/screenshot/res/";
+		stitch.run(5, 0, 3, 3, 20, 20, directory, filenames, outputDirectory);
 	}
 
+	/**
+	 * @author fans.fan
+	 * @param gridType 布局方式
+	 * @param gridOrder 顺序
+	 * @param gridSizeX 多少行
+	 * @param gridSizeY 多少列
+	 * @param overlapX X方向的重合.20%就输入20
+	 * @param overlapY Y方向的重合.20%就输入20
+	 * @param directory 输入文件所在文件夹路径,以/结尾
+	 * @param filenames 文件名格式.如:tile_{ii}.tif, {i}_W.png
+	 * @param outputDirectory 输出路径.以/结尾
+	 */
 	public void run(int gridType, int gridOrder, int gridSizeX, int gridSizeY, int overlapX, int overlapY,
 			String directory, String filenames, String outputDirectory) {
 		Log.info("Stitching internal version: " + Stitching_Grid.version);
 
-		final GridType grid = new GridType();
+//		final GridType grid = new GridType();
 
 //		final int gridType = grid.getType();
 //		final int gridOrder = grid.getOrder();
@@ -395,7 +406,7 @@ public class Stitching_Grid {
 			ds = new Downsampler();
 
 		if (gridType < 5)
-			elements = getGridLayout(grid, gridSizeX, gridSizeY, overlapX, overlapY, directory, filenames, startI, startX, startY, params.virtual, ds);
+			elements = getGridLayout(gridType, gridOrder, gridSizeX, gridSizeY, overlapX, overlapY, directory, filenames, startI, startX, startY, params.virtual, ds);
 		// John Lapage modified this: copying setup for Unknown Positions
 		else if (gridType == 5 || gridType == 7)
 			elements = getAllFilesInDirectory(directory);
@@ -569,7 +580,7 @@ public class Stitching_Grid {
 			// test if there is no overlap between any of the tiles
 			// if so fusion can be much faster
 			boolean noOverlap = false;
-			if (overlapX == 0 && overlapY == 0 && params.computeOverlap == false && params.subpixelAccuracy == false && grid.getType() < 4) {
+			if (overlapX == 0 && overlapY == 0 && params.computeOverlap == false && params.subpixelAccuracy == false && gridType < 4) {
 				final GenericDialogPlus gd3 = new GenericDialogPlus("Use fast fusion algorithm");
 				gd3.addMessage("There seems to be no overlap between any of the tiles.");
 				gd3.addCheckbox("Use fast fusion?", defaultQuickFusion);
@@ -1185,17 +1196,17 @@ public class Stitching_Grid {
 		return elements;
 	}
 
-	protected ArrayList<ImageCollectionElement> getGridLayout(final GridType grid, final int gridSizeX, final int gridSizeY, final double overlapX, final double overlapY, final String directory,
+	protected ArrayList<ImageCollectionElement> getGridLayout(int gridType, int gridOrder, final int gridSizeX, final int gridSizeY, final double overlapX, final double overlapY, final String directory,
 			final String filenames, final int startI, final int startX, final int startY, final boolean virtual, final Downsampler ds) {
-		final int gridType = grid.getType();
-		final int gridOrder = grid.getOrder();
+//		final int gridType = grid.getType();
+//		final int gridOrder = grid.getOrder();
 
 		// define the parsing of filenames
 		// find how to parse
 		String replaceX = "{", replaceY = "{", replaceI = "{";
 		int numXValues = 0, numYValues = 0, numIValues = 0;
 
-		if (grid.getType() < 4) {
+		if (gridType < 4) {
 			int i1 = filenames.indexOf("{i");
 			int i2 = filenames.indexOf("i}");
 			if (i1 >= 0 && i2 > 0) {
@@ -1234,7 +1245,7 @@ public class Stitching_Grid {
 		final ImageCollectionElement[][] gridLayout = new ImageCollectionElement[gridSizeX][gridSizeY];
 
 		// all snakes, row, columns, whatever
-		if (grid.getType() < 4) {
+		if (gridType < 4) {
 			// the current position[x, y]
 			final int[] position = new int[2];
 
